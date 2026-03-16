@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Servicios</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <button id="closeAppButton" class="app-close-btn" type="button" title="Cerrar app y detener servidor">✕</button>
+
+    <!-- Barra lateral fija -->
+    <nav class="left-sidebar">
+        <div class="sidebar-icon active" title="Inicio">
+            🏠
+        </div>
+        <div class="sidebar-icon" id="productsIcon" title="Productos">
+            📦
+        </div>
+        <div class="sidebar-icon sidebar-menu" title="Sincronización Excel">
+            💾
+            <div class="sidebar-dropdown">
+                <div class="dropdown-item" onclick="importarTrabajos()">
+                    ⬇️ Importar
+                </div>
+                <div class="dropdown-item" onclick="exportarTrabajos()">
+                    ⬆️ Exportar
+                </div>
+            </div>
+        </div>
+        <div class="sidebar-icon placeholder" title="Reportes">
+            📊
+        </div>
+        <div class="sidebar-icon placeholder" title="Clientes">
+            👥
+        </div>
+    </nav>
+
+    <header>
+        <h1>📋 Programa de Registro de Servicios</h1>
+    </header>
+
+    <main>
+        <section class="form-section">
+            <h2>Registrar Nuevo Servicio</h2>
+            <form id="serviceForm">
+                <div class="form-group">
+                    <label for="clientName">Nombre del Cliente:</label>
+                    <input type="text" id="clientName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="vehiclePlate">Patente del Vehículo:</label>
+                    <input type="text" id="vehiclePlate" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="vehicleKm">Kilometraje del Vehículo:</label>
+                    <input type="number" id="vehicleKm" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="serviceType">Tipo de Servicio:</label>
+                    <select id="serviceType" required>
+                        <option value="">Seleccionar...</option>
+                        <option value="Service">Service</option>
+                        <option value="Revisión">Revisión</option>
+                        <option value="Cambio">Cambio</option>
+                    </select>
+                </div>
+
+                <!-- Campos genéricos (para Revisión y Cambio) -->
+                <div id="genericFields">
+                    <div class="form-group">
+                        <label for="description">Descripción:</label>
+                        <textarea id="description" rows="4"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date">Fecha:</label>
+                        <input type="date" id="date">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cost">Costo ($):</label>
+                        <input type="number" id="cost" step="0.01" min="0">
+                    </div>
+                </div>
+
+                <!-- Campos específicos para Service -->
+                <div id="serviceFields" style="display: none;">
+                    <div class="form-group">
+                        <label for="date">Fecha:</label>
+                        <input type="date" id="serviceDate">
+                    </div>
+
+                    <h3 class="section-title">Filtros</h3>
+                    <div class="service-item-row">
+                        <label>Aceite:</label>
+                        <input type="text" id="filtroAceite" placeholder="Producto" list="filtroAceiteList">
+                        <datalist id="filtroAceiteList"></datalist>
+                        <span class="price-label">$</span>
+                        <input type="number" id="filtroAceitePrecio" step="0.01" min="0" placeholder="0.00">
+                    </div>
+                    <div class="service-item-row">
+                        <label>Aire:</label>
+                        <input type="text" id="filtroAire" placeholder="Producto" list="filtroAireList">
+                        <datalist id="filtroAireList"></datalist>
+                        <span class="price-label">$</span>
+                        <input type="number" id="filtroAirePrecio" step="0.01" min="0" placeholder="0.00">
+                    </div>
+                    <div class="service-item-row">
+                        <label>Combustible 1:</label>
+                        <input type="text" id="filtroCombustible1" placeholder="Producto" list="filtroCombustibleList">
+                        <datalist id="filtroCombustibleList"></datalist>
+                        <span class="price-label">$</span>
+                        <input type="number" id="filtroCombustible1Precio" step="0.01" min="0" placeholder="0.00">
+                    </div>
+                    <div class="service-item-row">
+                        <label>Combustible 2:</label>
+                        <input type="text" id="filtroCombustible2" placeholder="Producto" list="filtroCombustibleList">
+                        <span class="price-label">$</span>
+                        <input type="number" id="filtroCombustible2Precio" step="0.01" min="0" placeholder="0.00">
+                    </div>
+                    <div class="service-item-row">
+                        <label>Habitáculo:</label>
+                        <input type="text" id="filtroHabitaculo" placeholder="Producto" list="filtroHabitaculoList">
+                        <datalist id="filtroHabitaculoList"></datalist>
+                        <span class="price-label">$</span>
+                        <input type="number" id="filtroHabitaculoPrecio" step="0.01" min="0" placeholder="0.00">
+                    </div>
+
+                    <h3 class="section-title">Aceite de Motor</h3>
+                    <div class="service-item-row">
+                        <label>Aceite:</label>
+                        <input type="text" id="aceite1" placeholder="Producto" list="aceiteMotorList">
+                        <datalist id="aceiteMotorList"></datalist>
+                        <label>Cantidad:</label>
+                        <input type="text" id="aceite1Cantidad" placeholder="Cantidad">
+                        <span class="price-label">$</span>
+                        <input type="number" id="aceite1Precio" step="0.01" min="0" placeholder="0.00">
+                    </div>
+                    <div class="service-item-row">
+                        <label>Aceite:</label>
+                        <input type="text" id="aceite2" placeholder="Producto" list="aceiteMotorList">
+                        <label>Cantidad:</label>
+                        <input type="text" id="aceite2Cantidad" placeholder="Cantidad">
+                        <span class="price-label">$</span>
+                        <input type="number" id="aceite2Precio" step="0.01" min="0" placeholder="0.00">
+                    </div>
+
+                    <h3 class="section-title">Aceite de Caja</h3>
+                    <div class="service-item-row">
+                        <label>Aceite de caja:</label>
+                        <input type="text" id="aceiteCaja" placeholder="Producto" list="aceiteCajaList">
+                        <datalist id="aceiteCajaList"></datalist>
+                        <label>Cantidad:</label>
+                        <input type="text" id="aceiteCajaCantidad" placeholder="Cantidad">
+                        <span class="price-label">$</span>
+                        <input type="number" id="aceiteCajaPrecio" step="0.01" min="0" placeholder="0.00">
+                    </div>
+
+                    <h3 class="section-title">Mano de Obra</h3>
+                    <div class="service-item-row">
+                        <label>Mano de Obra:</label>
+                        <input type="text" id="manoObra" placeholder="Descripción">
+                        <span class="price-label">$</span>
+                        <input type="number" id="manoObraPrecio" step="0.01" min="0" placeholder="0.00">
+                    </div>
+
+                    <div class="form-group total-service">
+                        <label for="totalService">Total de Service:</label>
+                        <div class="total-display">
+                            <span class="price-label">$</span>
+                            <input type="text" id="totalService" value="0.00" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">Registrar Servicio</button>
+            </form>
+        </section>
+
+        <section class="list-section">
+            <h2>Servicios Registrados</h2>
+            <div class="filter-controls">
+                <input type="text" id="searchInput" placeholder="Buscar por cliente...">
+            </div>
+            <div id="serviceList" class="service-list"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Sistema de Registro de Servicios</p>
+    </footer>
+
+    <script src="utils.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

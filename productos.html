@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Productos</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <button id="closeAppButton" class="app-close-btn" type="button" title="Cerrar app y detener servidor">✕</button>
+
+    <!-- Barra lateral fija -->
+    <nav class="left-sidebar">
+        <div class="sidebar-icon" id="homeIcon" title="Inicio">
+            🏠
+        </div>
+        <div class="sidebar-icon active" title="Productos">
+            📦
+        </div>
+        <div class="sidebar-icon sidebar-menu" title="Sincronización Excel">
+            💾
+            <div class="sidebar-dropdown">
+                <div class="dropdown-item" onclick="importarProductos()">
+                    ⬇️ Importar
+                </div>
+                <div class="dropdown-item" onclick="exportarProductos()">
+                    ⬆️ Exportar
+                </div>
+            </div>
+        </div>
+        <div class="sidebar-icon placeholder" title="Reportes">
+            📊
+        </div>
+        <div class="sidebar-icon placeholder" title="Clientes">
+            👥
+        </div>
+    </nav>
+
+    <header>
+        <h1>📦 Gestión de Productos</h1>
+    </header>
+
+    <main class="products-main">
+        <section class="form-section">
+            <h2>Agregar Nuevo Producto</h2>
+            <form id="productForm">
+                <div class="form-group">
+                    <label for="productCategory">Categoría:</label>
+                    <select id="productCategory" required>
+                        <option value="">Seleccionar...</option>
+                        <option value="Filtro de Aceite">Filtro de Aceite</option>
+                        <option value="Filtro de Aire">Filtro de Aire</option>
+                        <option value="Filtro de Combustible">Filtro de Combustible</option>
+                        <option value="Filtro de Habitáculo">Filtro de Habitáculo</option>
+                        <option value="Aceite de Motor">Aceite de Motor</option>
+                        <option value="Aceite de Caja">Aceite de Caja</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="productName">Nombre del Producto:</label>
+                    <input type="text" id="productName" required>
+                </div>
+                <div class="form-group">
+                    <label for="productPrice">Precio ($):</label>
+                    <input type="number" id="productPrice" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="productDescription">Descripción:</label>
+                    <textarea id="productDescription" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn-submit">Agregar Producto</button>
+            </form>
+        </section>
+
+        <section class="list-section">
+            <h2>Productos Registrados</h2>
+            <div class="filter-controls">
+                <select id="categoryFilter">
+                    <option value="">Todas las categorías</option>
+                    <option value="Filtro de Aceite">Filtro de Aceite</option>
+                    <option value="Filtro de Aire">Filtro de Aire</option>
+                    <option value="Filtro de Combustible">Filtro de Combustible</option>
+                    <option value="Filtro de Habitáculo">Filtro de Habitáculo</option>
+                    <option value="Aceite de Motor">Aceite de Motor</option>
+                    <option value="Aceite de Caja">Aceite de Caja</option>
+                </select>
+            </div>
+            <div id="productsList" class="products-grid"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Sistema de Registro de Servicios</p>
+    </footer>
+
+    <script src="utils.js"></script>
+    <script src="productos.js"></script>
+</body>
+</html>
