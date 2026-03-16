@@ -201,12 +201,68 @@ textarea:focus {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.service-list .list-header {
-    grid-template-columns: 1.5fr 1fr 1fr 1.2fr 1fr 1fr;
+.services-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
 }
 
-.service-list .list-item {
-    grid-template-columns: 1.5fr 1fr 1fr 1.2fr 1fr 1fr;
+.services-table thead {
+    background: var(--gradient-primary);
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.services-table th {
+    padding: 1rem 1.5rem;
+    text-align: left;
+    font-weight: 600;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.services-table td {
+    padding: 0.75rem 1.5rem;
+    border: 1px solid #e0e0e0;
+    border-bottom: 1px solid #d0d0d0;
+}
+
+.services-table tbody tr {
+    transition: background-color 0.2s;
+}
+
+.services-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.services-table tbody tr:nth-child(even) {
+    background-color: #fafbfc;
+}
+
+.table-cost {
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: 1.05rem;
+}
+
+.table-vehicle {
+    text-align: center;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.table-actions {
+    text-align: center;
+    display: flex;
+    gap: 0.4rem;
+    justify-content: center;
+}
+
+.btn-edit-small,
+.btn-delete-small {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
 }
 
 /* Botones base */
@@ -478,70 +534,59 @@ footer {
     gap: 2rem;
 }
 
-.products-grid {
+.products-list {
     background: white;
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.list-header {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    gap: 1rem;
-    padding: 1rem 1.5rem;
-    background: var(--gradient-primary);
-    color: white;
-    font-weight: 600;
+.products-table {
+    width: 100%;
+    border-collapse: collapse;
     font-size: 0.95rem;
 }
 
-.list-item {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    gap: 1rem;
+.products-table thead {
+    background: var(--gradient-primary);
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.products-table th {
     padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--border-color);
-    transition: background 0.2s;
-    align-items: center;
+    text-align: left;
+    font-weight: 600;
+    border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-.list-item:hover {
-    background: #f8f9fa;
+.products-table td {
+    padding: 0.75rem 1.5rem;
+    border: 1px solid #e0e0e0;
+    border-bottom: 1px solid #d0d0d0;
 }
 
-.list-item:last-child {
-    border-bottom: none;
+.products-table tbody tr {
+    transition: background-color 0.2s;
 }
 
-.list-item-name {
-    font-weight: 500;
-    color: var(--text-color);
+.products-table tbody tr:hover {
+    background-color: #f8f9fa;
 }
 
-.list-item-price,
-.list-item-cost {
+.products-table tbody tr:nth-child(even) {
+    background-color: #fafbfc;
+}
+
+.table-price {
     font-weight: 600;
     color: var(--primary-color);
-    font-size: 1.1rem;
+    font-size: 1.05rem;
 }
 
-.list-item-client,
-.list-item-plate,
-.list-item-type {
-    color: var(--text-color);
-}
 
-.list-item-date {
-    color: var(--text-muted);
-    font-size: 0.9rem;
-}
-
-.list-item-actions {
-    display: flex;
-    gap: 0.5rem;
-    justify-content: flex-end;
-}
 
 .no-products {
     text-align: center;
@@ -560,14 +605,6 @@ footer {
     .products-main {
         max-width: 100%;
         grid-template-columns: 1fr;
-    }
-
-    .list-header {
-        font-size: 0.85rem;
-    }
-
-    .list-item {
-        font-size: 0.9rem;
     }
 }
 
@@ -596,31 +633,6 @@ footer {
 
     .products-main {
         grid-template-columns: 1fr;
-    }
-
-    .list-header {
-        display: none;
-    }
-
-    .list-item {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        padding: 1rem;
-        align-items: flex-start;
-    }
-
-    .list-item > div {
-        width: 100%;
-    }
-
-    .list-item-actions {
-        justify-content: flex-start;
-    }
-
-    .service-list .list-item {
-        display: flex;
-        flex-direction: column;
     }
     
     .filter-controls {

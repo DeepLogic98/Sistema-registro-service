@@ -1,3 +1,31 @@
+// ===== CONSTANTES DE CONFIGURACIÓN =====
+const CONSTANTS = {
+    SERVICE_TYPES: {
+        SERVICE: 'Service',
+        REVISION: 'Revisión',
+        CAMBIO: 'Cambio'
+    },
+    PRODUCT_CATEGORIES: {
+        FILTRO_ACEITE: 'Filtro de Aceite',
+        FILTRO_AIRE: 'Filtro de Aire',
+        FILTRO_COMBUSTIBLE: 'Filtro de Combustible',
+        FILTRO_HABITACULO: 'Filtro de Habitáculo',
+        ACEITE_MOTOR: 'Aceite de Motor',
+        ACEITE_CAJA: 'Aceite de Caja'
+    },
+    BUTTON_LABELS: {
+        EDIT: 'Editar',
+        DELETE: 'Eliminar',
+        CANCEL: 'Cancelar'
+    },
+    NOTIFICATIONS: {
+        SERVICE_REGISTERED: 'Servicio registrado exitosamente',
+        SERVICE_UPDATED: 'Servicio actualizado exitosamente',
+        SERVICE_DELETED: 'Servicio eliminado',
+        EDIT_CANCELLED: 'Edición cancelada'
+    }
+};
+
 // Elementos del DOM
 const serviceForm = document.getElementById('serviceForm');
 const serviceList = document.getElementById('serviceList');
@@ -9,6 +37,9 @@ const totalServiceDisplay = document.getElementById('totalService');
 const dateInput = document.getElementById('date');
 const serviceDateInput = document.getElementById('serviceDate');
 const productsIcon = document.getElementById('productsIcon');
+
+// Estado de edición
+let editingServiceId = null;
 
 // Datos
 let services = JSON.parse(localStorage.getItem(STORAGE_KEYS.SERVICES)) || [];
@@ -42,7 +73,7 @@ servicePriceInputs.forEach(inputId => {
 function toggleServiceFields() {
     const selectedType = serviceTypeSelect.value;
     
-    if (selectedType === 'Service') {
+    if (selectedType === CONSTANTS.SERVICE_TYPES.SERVICE) {
         genericFields.style.display = 'none';
         serviceFields.style.display = 'block';
         calculateServiceTotal();
@@ -68,7 +99,7 @@ function handleSubmit(e) {
     const selectedType = document.getElementById('serviceType').value;
     let newService;
     
-    if (selectedType === 'Service') {
+    if (selectedType === CONSTANTS.SERVICE_TYPES.SERVICE) {
         // Recopilar datos específicos de Service
         const serviceData = {
             filtros: {
@@ -99,7 +130,7 @@ function handleSubmit(e) {
             serviceData.manoObra.precio;
         
         newService = {
-            id: Date.now(),
+            id: editingServiceId || Date.now(),
             clientName: document.getElementById('clientName').value,
             vehiclePlate: document.getElementById('vehiclePlate').value,
             vehicleKm: parseInt(document.getElementById('vehicleKm').value),
@@ -111,7 +142,7 @@ function handleSubmit(e) {
     } else {
         // Datos genéricos para otros tipos
         newService = {
-            id: Date.now(),
+            id: editingServiceId || Date.now(),
             clientName: document.getElementById('clientName').value,
             vehiclePlate: document.getElementById('vehiclePlate').value,
             vehicleKm: parseInt(document.getElementById('vehicleKm').value),
@@ -122,15 +153,25 @@ function handleSubmit(e) {
         };
     }
     
-    services.push(newService);
+    // Si estamos editando, actualizar; si no, insertar
+    if (editingServiceId) {
+        const index = services.findIndex(s => s.id === editingServiceId);
+        if (index !== -1) {
+            services[index] = newService;
+        }
+        showNotification(CONSTANTS.NOTIFICATIONS.SERVICE_UPDATED);
+        cancelEditService();
+    } else {
+        services.push(newService);
+        showNotification(CONSTANTS.NOTIFICATIONS.SERVICE_REGISTERED);
+    }
+    
     saveServices();
     serviceForm.reset();
     dateInput.value = today;
     serviceDateInput.value = today;
     toggleServiceFields();
     displayServices();
-    
-    showNotification('Servicio registrado exitosamente');
 }
 
 // Función para guardar en localStorage
@@ -153,28 +194,111 @@ function displayServices() {
     }
     
     serviceList.innerHTML = `
-        <div class="list-header">
-            <div>Cliente</div>
-            <div>Patente</div>
-            <div>Tipo</div>
-            <div>Fecha</div>
-            <div>Costo</div>
-            <div>Acciones</div>
-        </div>
-    ` + filteredServices
-        .sort((a, b) => new Date(b.date) - new Date(a.date))
-        .map(service => `
-            <div class="list-item">
-                <div class="list-item-client">${service.clientName}</div>
-                <div class="list-item-plate">${service.vehiclePlate}</div>
-                <div class="list-item-type">${service.serviceType}</div>
-                <div class="list-item-date">${formatDate(service.date)}</div>
-                <div class="list-item-cost">$${service.cost.toFixed(2)}</div>
-                <div class="list-item-actions">
-                    <button onclick="deleteService(${service.id})" class="btn-delete-small">Eliminar</button>
-                </div>
-            </div>
-        `).join('');
+        <table class="services-table">
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Patente</th>
+                    <th>Vehículo</th>
+                    <th>Tipo</th>
+                    <th>Fecha</th>
+                    <th>Costo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${filteredServices
+                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                    .map(service => `
+                        <tr>
+                            <td>${service.clientName}</td>
+                            <td>${service.vehiclePlate}</td>
+                            <td class="table-vehicle">-</td>
+                            <td>${service.serviceType}</td>
+                            <td>${formatDate(service.date)}</td>
+                            <td class="table-cost">$${service.cost.toFixed(2)}</td>
+                            <td class="table-actions">
+                                <button onclick="editService(${service.id})" class="btn-edit-small">${CONSTANTS.BUTTON_LABELS.EDIT}</button>
+                                <button onclick="deleteService(${service.id})" class="btn-delete-small">${CONSTANTS.BUTTON_LABELS.DELETE}</button>
+                            </td>
+                        </tr>
+                    `).join('')}
+            </tbody>
+        </table>
+    `;
+}
+
+// Función para editar servicio
+function editService(id) {
+    const service = services.find(s => s.id === id);
+    if (!service) return;
+    
+    editingServiceId = id;
+    
+    // Cargar datos en el formulario
+    document.getElementById('clientName').value = service.clientName;
+    document.getElementById('vehiclePlate').value = service.vehiclePlate;
+    document.getElementById('vehicleKm').value = service.vehicleKm;
+    document.getElementById('serviceType').value = service.serviceType;
+    
+    // Cambiar tipo de servicio para mostrar campos correctos
+    toggleServiceFields();
+    
+    if (service.serviceType === CONSTANTS.SERVICE_TYPES.SERVICE) {
+        // Cargar datos específicos de Service
+        document.getElementById('serviceDate').value = service.date;
+        
+        const data = service.serviceData;
+        document.getElementById('filtroAceite').value = data.filtros.aceite.producto;
+        document.getElementById('filtroAceitePrecio').value = data.filtros.aceite.precio || '';
+        document.getElementById('filtroAire').value = data.filtros.aire.producto;
+        document.getElementById('filtroAirePrecio').value = data.filtros.aire.precio || '';
+        document.getElementById('filtroCombustible1').value = data.filtros.combustible1.producto;
+        document.getElementById('filtroCombustible1Precio').value = data.filtros.combustible1.precio || '';
+        document.getElementById('filtroCombustible2').value = data.filtros.combustible2.producto;
+        document.getElementById('filtroCombustible2Precio').value = data.filtros.combustible2.precio || '';
+        document.getElementById('filtroHabitaculo').value = data.filtros.habitaculo.producto;
+        document.getElementById('filtroHabitaculoPrecio').value = data.filtros.habitaculo.precio || '';
+        
+        document.getElementById('aceite1').value = data.aceites.aceite1.producto;
+        document.getElementById('aceite1Cantidad').value = data.aceites.aceite1.cantidad;
+        document.getElementById('aceite1Precio').value = data.aceites.aceite1.precio || '';
+        document.getElementById('aceite2').value = data.aceites.aceite2.producto;
+        document.getElementById('aceite2Cantidad').value = data.aceites.aceite2.cantidad;
+        document.getElementById('aceite2Precio').value = data.aceites.aceite2.precio || '';
+        
+        document.getElementById('aceiteCaja').value = data.aceiteCaja.producto;
+        document.getElementById('aceiteCajaCantidad').value = data.aceiteCaja.cantidad;
+        document.getElementById('aceiteCajaPrecio').value = data.aceiteCaja.precio || '';
+        
+        document.getElementById('manoObra').value = data.manoObra.descripcion;
+        document.getElementById('manoObraPrecio').value = data.manoObra.precio || '';
+        
+        calculateServiceTotal();
+    } else {
+        // Cargar datos genéricos
+        document.getElementById('date').value = service.date;
+        document.getElementById('description').value = service.description || '';
+        document.getElementById('cost').value = service.cost || '';
+    }
+    
+    // Cambiar texto del botón y desplazar al formulario
+    const submitBtn = serviceForm.querySelector('button[type="submit"]');
+    submitBtn.textContent = 'Actualizar Servicio';
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    showNotification('Editando servicio - Modifica los datos y guarda');
+}
+
+// Función para cancelar edición
+function cancelEditService() {
+    editingServiceId = null;
+    
+    const submitBtn = serviceForm.querySelector('button[type="submit"]');
+    submitBtn.textContent = 'Registrar Servicio';
+    
+    // Limpiar el formulario solo al cancelar, no después de guardar
+    // lo cual se hace en handleSubmit
 }
 
 // Función para eliminar servicio
@@ -183,7 +307,7 @@ function deleteService(id) {
         services = services.filter(service => service.id !== id);
         saveServices();
         displayServices();
-        showNotification('Servicio eliminado');
+        showNotification(CONSTANTS.NOTIFICATIONS.SERVICE_DELETED);
     }
 }
 
@@ -197,12 +321,12 @@ productsIcon.addEventListener('click', () => {
 // Actualizar datalists con productos
 function updateProductDataLists() {
     const categoryMappings = {
-        'Filtro de Aceite': 'filtroAceiteList',
-        'Filtro de Aire': 'filtroAireList',
-        'Filtro de Combustible': 'filtroCombustibleList',
-        'Filtro de Habitáculo': 'filtroHabitaculoList',
-        'Aceite de Motor': 'aceiteMotorList',
-        'Aceite de Caja': 'aceiteCajaList'
+        [CONSTANTS.PRODUCT_CATEGORIES.FILTRO_ACEITE]: 'filtroAceiteList',
+        [CONSTANTS.PRODUCT_CATEGORIES.FILTRO_AIRE]: 'filtroAireList',
+        [CONSTANTS.PRODUCT_CATEGORIES.FILTRO_COMBUSTIBLE]: 'filtroCombustibleList',
+        [CONSTANTS.PRODUCT_CATEGORIES.FILTRO_HABITACULO]: 'filtroHabitaculoList',
+        [CONSTANTS.PRODUCT_CATEGORIES.ACEITE_MOTOR]: 'aceiteMotorList',
+        [CONSTANTS.PRODUCT_CATEGORIES.ACEITE_CAJA]: 'aceiteCajaList'
     };
     
     // Limpiar todos los datalists
@@ -228,14 +352,14 @@ function updateProductDataLists() {
 
 // Event listeners para autorrellenar precios
 const productInputMappings = [
-    { input: 'filtroAceite', price: 'filtroAceitePrecio', category: 'Filtro de Aceite' },
-    { input: 'filtroAire', price: 'filtroAirePrecio', category: 'Filtro de Aire' },
-    { input: 'filtroCombustible1', price: 'filtroCombustible1Precio', category: 'Filtro de Combustible' },
-    { input: 'filtroCombustible2', price: 'filtroCombustible2Precio', category: 'Filtro de Combustible' },
-    { input: 'filtroHabitaculo', price: 'filtroHabitaculoPrecio', category: 'Filtro de Habitáculo' },
-    { input: 'aceite1', price: 'aceite1Precio', category: 'Aceite de Motor' },
-    { input: 'aceite2', price: 'aceite2Precio', category: 'Aceite de Motor' },
-    { input: 'aceiteCaja', price: 'aceiteCajaPrecio', category: 'Aceite de Caja' }
+    { input: 'filtroAceite', price: 'filtroAceitePrecio', category: CONSTANTS.PRODUCT_CATEGORIES.FILTRO_ACEITE },
+    { input: 'filtroAire', price: 'filtroAirePrecio', category: CONSTANTS.PRODUCT_CATEGORIES.FILTRO_AIRE },
+    { input: 'filtroCombustible1', price: 'filtroCombustible1Precio', category: CONSTANTS.PRODUCT_CATEGORIES.FILTRO_COMBUSTIBLE },
+    { input: 'filtroCombustible2', price: 'filtroCombustible2Precio', category: CONSTANTS.PRODUCT_CATEGORIES.FILTRO_COMBUSTIBLE },
+    { input: 'filtroHabitaculo', price: 'filtroHabitaculoPrecio', category: CONSTANTS.PRODUCT_CATEGORIES.FILTRO_HABITACULO },
+    { input: 'aceite1', price: 'aceite1Precio', category: CONSTANTS.PRODUCT_CATEGORIES.ACEITE_MOTOR },
+    { input: 'aceite2', price: 'aceite2Precio', category: CONSTANTS.PRODUCT_CATEGORIES.ACEITE_MOTOR },
+    { input: 'aceiteCaja', price: 'aceiteCajaPrecio', category: CONSTANTS.PRODUCT_CATEGORIES.ACEITE_CAJA }
 ];
 
 productInputMappings.forEach(mapping => {

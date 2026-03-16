@@ -55,23 +55,32 @@ function displayProducts() {
     }
     
     productsList.innerHTML = `
-        <div class="list-header">
-            <div>Nombre del Producto</div>
-            <div>Precio</div>
-            <div>Acciones</div>
-        </div>
-    ` + filteredProducts
-        .sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name))
-        .map(product => `
-            <div class="list-item">
-                <div class="list-item-name">${product.name}</div>
-                <div class="list-item-price">$${product.price.toFixed(2)}</div>
-                <div class="list-item-actions">
-                    <button onclick="editProduct(${product.id})" class="btn-edit-small">Editar</button>
-                    <button onclick="deleteProduct(${product.id})" class="btn-delete-small">Eliminar</button>
-                </div>
-            </div>
-        `).join('');
+        <table class="products-table">
+            <thead>
+                <tr>
+                    <th>Nombre del Producto</th>
+                    <th>Categoría</th>
+                    <th>Precio</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${filteredProducts
+                    .sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name))
+                    .map(product => `
+                        <tr>
+                            <td>${product.name}</td>
+                            <td>${product.category}</td>
+                            <td class="table-price">$${product.price.toFixed(2)}</td>
+                            <td class="table-actions">
+                                <button onclick="editProduct(${product.id})" class="btn-edit-small">Editar</button>
+                                <button onclick="deleteProduct(${product.id})" class="btn-delete-small">Eliminar</button>
+                            </td>
+                        </tr>
+                    `).join('')}
+            </tbody>
+        </table>
+    `;
 }
 
 // Función para editar producto
