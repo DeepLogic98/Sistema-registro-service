@@ -3,11 +3,30 @@ const XLSX = require('xlsx');
 const fs = require('fs');
 const path = require('path');
 const app = express();
-const PORT = 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 // Middleware
 app.use(express.json({ limit: '50mb' }));
 app.use(express.static(__dirname));
+
+// Ruta raíz - servir la página de inicio desde pages/Inicio/
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'pages', 'Inicio', 'Inicio.html'));
+});
+
+// Ruta para productos - servir desde pages/Productos/
+app.get('/productos', (req, res) => {
+    res.sendFile(path.join(__dirname, 'pages', 'Productos', 'productos.html'));
+});
+
+// Health check para validar que el puerto 3000 corresponde a esta app.
+app.get('/api/health', (req, res) => {
+    res.json({
+        ok: true,
+        app: 'programa-registro-service',
+        timestamp: new Date().toISOString()
+    });
+});
 
 // Ruta del archivo Excel único
 const DATABASE_PATH = path.join(__dirname, 'BaseDeDatos', 'BaseDeDatos.xlsx');

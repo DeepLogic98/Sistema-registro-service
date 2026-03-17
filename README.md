@@ -95,12 +95,19 @@
 
 ```
 ProgramaDeRegistroDeService/
-├── index.html              # Página principal (Trabajos)
-├── productos.html          # Página de productos
-├── app.js                  # Lógica de trabajos
-├── productos.js            # Lógica de productos
+├── INICIAR.bat             # Inicio recomendado (abre navegador automáticamente)
+├── package.json            # Configuración del proyecto
 ├── server.js              # Servidor Node.js
-├── package.json           # Configuración del proyecto
+├── styles.css             # Estilos globales
+├── utils.js               # Utilidades compartidas
+├── productos.js           # Archivo legado de productos (no usado por la vista actual)
+├── pages/
+│   ├── Inicio/
+│   │   ├── Inicio.html    # Página principal (Trabajos)
+│   │   └── inicio.js      # Lógica de trabajos
+│   └── Productos/
+│       ├── productos.html # Página de productos
+│       └── productos.js   # Lógica de productos
 └── BaseDeDatos/
     └── BaseDeDatos.xlsx   # 📊 ARCHIVO EXCEL ÚNICO
                             #    • Hoja "Trabajos" - Servicios registrados
@@ -138,7 +145,10 @@ ProgramaDeRegistroDeService/
 ## ⚠️ Notas Importantes
 
 1. **Siempre inicia el servidor** antes de abrir la página web
-2. **No abras index.html directamente** (haciendo doble clic), siempre usa http://localhost:3000
+2. **No abras archivos HTML directamente** (doble clic), entra siempre por la URL del servidor
+3. **URL de acceso**:
+   - Si usas `INICIAR.bat`, utiliza la URL que se abre automáticamente
+   - Si inicias manual, usa `http://localhost:3000`
 3. **Los datos se guardan**:
    - En localStorage del navegador (temporalmente)
    - En archivos Excel (permanentemente) cuando exportas
@@ -149,8 +159,9 @@ ProgramaDeRegistroDeService/
 ## 🆘 Solución de Problemas
 
 ### "No se pudo conectar con el servidor"
-- ✅ Verifica que el servidor esté corriendo (`npm start`)
-- ✅ Asegúrate de usar http://localhost:3000 en el navegador
+- ✅ Verifica que el servidor esté corriendo (`INICIAR.bat` o `npm start`)
+- ✅ Si usaste `INICIAR.bat`, usa la URL que abrió automáticamente
+- ✅ Si usaste `npm start`, usa `http://localhost:3000`
 
 ### "npm no se reconoce como comando"
 - ✅ Node.js no está instalado o no está en el PATH
@@ -165,6 +176,9 @@ ProgramaDeRegistroDeService/
 ## 📝 Comandos Útiles
 
 ```bash
+# Inicio recomendado (Windows)
+INICIAR.bat
+
 # Iniciar servidor
 npm start
 
@@ -183,8 +197,8 @@ npm --version
 ## 🎯 Flujo de Trabajo Recomendado
 
 1. **Inicio del día**:
-   - Abre terminal → `npm start`
-   - Abre navegador → http://localhost:3000
+   - Ejecuta `INICIAR.bat`
+   - Usa la URL que abre automáticamente
    - Haz clic en **⬆️ Importar** para cargar datos del Excel
 
 2. **Durante el trabajo**:

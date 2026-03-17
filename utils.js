@@ -1,7 +1,7 @@
 // Utilidades compartidas entre páginas
 
 // Constantes globales
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = window.location.origin;
 const STORAGE_KEYS = {
     SERVICES: 'services',
     PRODUCTS: 'products'
@@ -128,14 +128,6 @@ async function closeAppAndServer() {
     setTimeout(() => {
         window.open('', '_self');
         window.close();
-
-        // Fallback para navegadores que bloquean window.close().
-        setTimeout(() => {
-            if (!window.closed) {
-                document.body.className = 'app-closed-screen';
-                document.body.innerHTML = '<div>Servidor detenido correctamente.<br>Ahora puedes cerrar esta pestaña.</div>';
-            }
-        }, 300);
     }, 450);
 }
 
@@ -147,4 +139,8 @@ function initializeCloseButton() {
     closeButton.dataset.bound = 'true';
 }
 
-document.addEventListener('DOMContentLoaded', initializeCloseButton);
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeCloseButton);
+} else {
+    initializeCloseButton();
+}

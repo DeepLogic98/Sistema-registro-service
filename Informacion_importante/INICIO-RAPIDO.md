@@ -15,8 +15,8 @@
 
 ### Opción 1: Doble clic en `INICIAR.bat`
 - Simplemente haz doble clic en el archivo **INICIAR.bat**
-- Se abrirá una ventana negra (no la cierres)
-- Abre tu navegador en: **http://localhost:3000**
+- El sistema abrirá el navegador automáticamente
+- Si el puerto 3000 está ocupado, puede abrir en otro puerto (3001-3005)
 
 ### Opción 2: Comando manual
 1. Abre PowerShell aquí
@@ -57,7 +57,8 @@
 
 ## ⚠️ Importante
 
-- ✅ Siempre usa **http://localhost:3000** en el navegador
+- ✅ Si usas `INICIAR.bat`, usa la URL que se abre automáticamente
+- ✅ Si inicias manualmente (`npm start`), usa **http://localhost:3000**
 - ✅ NO abras index.html haciendo doble clic
 - ✅ Para hacer backup: copia el archivo `BaseDeDatos/BaseDeDatos.xlsx`
 - ✅ Para detener: presiona **Ctrl+C** en la terminal

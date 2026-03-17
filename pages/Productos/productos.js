@@ -13,7 +13,7 @@ categoryFilter.addEventListener('input', displayProducts);
 
 // Navegación
 homeIcon.addEventListener('click', () => {
-    window.location.href = 'index.html';
+    window.location.href = '/';
 });
 
 // Función para manejar el envío del formulario
@@ -149,4 +149,3 @@ async function importarProductos() {
     displayProducts();
     showNotification(result.message);
 }
-

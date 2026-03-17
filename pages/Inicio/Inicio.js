@@ -315,7 +315,7 @@ function deleteService(id) {
 
 // Event Listener para navegar a productos
 productsIcon.addEventListener('click', () => {
-    window.location.href = 'productos.html';
+    window.location.href = '/productos';
 });
 
 // Actualizar datalists con productos

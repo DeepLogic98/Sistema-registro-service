@@ -2,7 +2,7 @@
 
 ## Archivo: `BaseDeDatos/BaseDeDatos.xlsx`
 
-Este archivo Excel contiene **todas las datos del sistema** organizadas en diferentes hojas.
+Este archivo Excel contiene **todos los datos del sistema** organizados en diferentes hojas.
 
 ---
 
@@ -134,6 +134,10 @@ Puedes editar el archivo Excel manualmente:
 ### "No hay datos de trabajos/productos aún"
 - El archivo existe pero no tiene la hoja correspondiente
 - Exporta datos desde la aplicación para crear la hoja
+
+### "No se pudo conectar con el servidor"
+- Asegúrate de iniciar primero la app (`INICIAR.bat` o `npm start`)
+- Si usaste `INICIAR.bat`, utiliza la URL que se abrió automáticamente
 
 ### "Error al importar"
 - Verifica que los nombres de las columnas sean correctos
